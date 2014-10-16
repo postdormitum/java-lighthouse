@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zdwl.dao.ISysMenuMapper">
+	<select id="getSysMenuByName" resultType="SysMenuTbl" parameterType="string">
+		select *
+		from sys_menuactiontbl
+		where actionName=#{actionName}
+	</select>
+	<select id="getSysMenuByNameForPage" resultType="SysMenuTbl" parameterType="Page">
+		select *
+		from sys_menuactiontbl
+		where actionName like CONCAT(CONCAT('%',#{params.actionName}),'%')
+		order by id desc
+	</select>
+	<select id="getSysMenuByNameForHashMap" resultType="hashmap" parameterType="string">
+		select * from sys_menuactiontbl 
+		where actionName=#{actionName}
+	</select>
+	
+	<select id="getSysMenuByMap" resultType="hashmap" parameterType="map">
+		select * from sys_menuactiontbl 
+		where actionName=#{actionName} and id = #{id}
+	</select>
+	
+	<insert id="insertSysMenu" parameterType="SysMenuTbl" 
+		useGeneratedKeys="true" keyProperty="id">
+		insert into sys_menuactiontbl (actionName,actionType,doAction,opMan,opTime,isDel)
+		values (#{actionName},#{actionType},#{doAction},#{opMan},#{opTime},#{isDel})
+	</insert>
+	
+	<!-- com.zdwl.testdb.model.sysMenuMapper
+	<insert id="insertBook" parameterType="Book">
+		insert into book(isbn, name, price)
+		value(#{isbn}, #{name}, #{price})
+	</insert>
+	<update id="updateBook" parameterType="Book">
+		update book 
+		set
+		name=#{name},
+		price=#{price}
+		where isbn=#{isbn}
+	</update>
+	<delete id="deleteBook" parameterType="String">
+		delete from book where name=#{name}		
+	</delete>
+	 -->
+</mapper>

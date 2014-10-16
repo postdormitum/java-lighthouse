@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+
+	<!-- 开启使用开发模式，详细错误提示 -->
+    <constant name="struts.devMode" value="true" />
+    <!-- 将对象交给spring管理 -->
+    <constant name="struts.objectFactory" value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+    <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true"/>  
+    <!-- 指定资源编码类型 -->
+    <constant name="struts.i18n.encoding" value="UTF-8" /> 
+	<!-- 指定每次请求到达，重新加载资源文件 -->
+	<constant name="struts.i18n.reload" value="false" />
+	<!-- 指定每次配置文件更改后，自动重新加载 -->
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<!-- 国际化资源文件
+		<constant name="struts.custom.i18n.resources" value="resources/content/Language" /> -->
+	<!-- 默认后缀名 -->
+	<constant name="struts.action.extension" value="do,action" />
+	<!-- 开启动态方法调用 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<!-- Struts Annotation -->
+	<constant name="actionPackages" value="com.zdwl.webc" />
+	<constant name="struts.convention.action.packages" value="com.zdwl.webc"></constant>
+	
+	<constant name="struts.multipart.maxSize" value="50000000" />
+	
+    <include file="struts-default.xml" />
+
+	<!--  
+	<package name="struts2" extends="struts-default">
+		<action name="regist" class="action.EmpAction" method="regist">
+			<result>/login.jsp</result>
+			<result name="error">/regist.jsp</result>
+		</action>
+		
+		<action name="login" class="action.EmpAction" method="login">
+			<result type="chain">getAllEmps</result>
+			<result name="error">/login.jsp</result>
+		</action>
+		
+		<action name="getAllEmps" class="action.EmpAction" method="getAllEmps">
+			<result>/allEmps.jsp</result>
+		</action>
+		
+		<action name="toUpdateEmpPage" class="action.EmpAction" method="toUpdateEmpPage">
+			<result>/emp.jsp</result>
+		</action>
+		
+		<action name="updateEmp" class="action.EmpAction" method="updateEmp">
+			<result>/emp.jsp</result>
+		</action>
+		
+		<action name="deleteEmp" class="action.EmpAction" method="deleteEmp">
+			<result type="chain">getAllEmps</result>
+		</action>
+	</package>
+	-->
+</struts>

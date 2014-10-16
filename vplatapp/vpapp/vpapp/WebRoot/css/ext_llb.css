@@ -1,0 +1,156 @@
+@CHARSET "UTF-8";
+/**
+body{
+	background-color:#dfe8f6;
+}
+*/
+td.label {
+	width: 70px;
+	text-align: right;
+	padding: 0px 5px;
+}
+
+table.table-in-dropdownlist,table.table-in-dropdownlist td {
+	border-collapse: collapse;
+	border: solid #000000;
+	border-width: 1px;
+	padding: 0px, 2px;
+}
+
+table.table-in-dropdownlist {
+	width: 100%;
+}
+.search-item {
+    font:normal 11px tahoma, arial, helvetica, sans-serif;
+    padding:3px 10px 3px 10px;
+    border:1px solid #fff;
+    border-bottom:1px solid #eeeeee;
+    white-space:normal;
+    color:#555;
+}
+.add { background: url(../images/ext/Add.png) no-repeat !important; }
+
+.edit { background: url(../images/ext/Edit.png) no-repeat !important; }
+
+.search { background: url(../images/ext/Search.png) no-repeat !important; }
+.pause { background: url(../images/ext/Stop.png) no-repeat !important; }
+.resume { background: url(../images/ext/Resume.png) no-repeat !important; }
+
+.remove { background: url(../images/ext/Delete.png) no-repeat !important; }
+.reset { background: url(../images/ext/Delete.png) no-repeat !important; }
+.printer { background: url(../images/ext/printer.png) no-repeat !important; }
+.image-btn { min-width: 100px;  width: 100px; }
+
+/* 必填项 */
+.requiredField,
+	.requiredField .x-grid3-cell-inner,
+	#grid_detail .x-grid3-col-outnum,
+	#grid_detail .x-grid3-col-applynum,
+	#grid_detail .x-grid3-col-classname, 
+	#grid_detail .x-grid3-col-toolname,
+	.measureType1 .x-grid3-col-num1,
+	.measureType1 .x-grid3-col-unit1,
+	.measureType2 .x-grid3-col-num2,
+	.measureType2 .x-grid3-col-unit2,
+	#selReleaseGoodsGrid .x-grid3-col-num,
+	#selReleaseGoodsGrid .x-grid3-col-changedHscodeName,
+	#selReleaseGoodsGrid .x-grid3-col-changedHscode,
+	#selReleaseGoodsGrid .x-grid3-col-changedNum,
+	#selReleaseGoodsGrid .productIdRequired .x-grid3-col-productId
+	{
+	background-color: lightgreen !important;
+	background-image: none !important;
+}
+/* 可选项 */
+	.x-grid3-col-num1, .x-grid3-col-unit1, .x-grid3-col-num2, 
+	.x-grid3-col-unit2, #grid_detail .x-grid3-col-remark,
+	#grid_detail .x-grid3-col-id-pack{
+	background-color: ghostwhite;
+	background-image: none !important;
+}
+/* 只读项 */
+.readOnlyField{
+	/*
+		background-color:#DDD !important;
+		background: url(text-bg-disable.gif) repeat-x;
+	*/
+	height:12px;
+	background-color: #f1f1f3;
+	vertical-align: center;
+	border: none !important;
+}
+
+/* 选择放行货物选择框中的只读项（显示项） */
+#selReleaseGoodsGrid .x-grid3-col-declNo,
+#selReleaseGoodsGrid .x-grid3-col-goodsCname,
+#selReleaseGoodsGrid .x-grid3-col-hsCode,
+#selReleaseGoodsGrid .x-grid3-col-balance,
+#selReleaseGoodsGrid .x-grid3-col-measureUnitname,
+#selReleaseGoodsGrid .x-grid3-col-changedUnitName
+{
+	background: url(text-bg-disable.gif) repeat-x;
+}
+
+.x-grid-record-red *{
+    color: #F00 !important;
+}
+
+.x-grid-record-blue *{
+    color: #2828FF !important;
+}
+.x-grid-record-row-required * {
+	background-color: lightgreen;
+	background-image: none !important;
+}
+.x-grid3-row-selected,
+	.x-combo-selected {
+	background-color: #ABF !important;
+
+}
+.goodsInCiq *{ color: #181 !important; }
+.goodsInYnbiq *{ color: #118 !important; }
+.goodsInHwdy *{color: #811 !important; }
+
+/*for ext*/
+
+.addp {
+	background: url(../images/ext/Add.png) no-repeat !important;
+}
+.editp {
+	background: url(../images/ext/Edit.png) no-repeat !important;
+}
+.deletep {
+	background: url(../images/ext/Delete.png) no-repeat !important;
+}
+.pausep {
+	background: url(../images/ext/Pause.png) no-repeat !important;
+}
+.resumep {
+	background: url(../images/ext/Resume.png) no-repeat !important;
+}
+.stopp {
+	background: url(../images/ext/Stop.png) no-repeat !important;
+}
+.histp {
+	background: url(../images/ext/Histp.png) no-repeat !important;
+}
+.right{
+	background: url(../images/ext/right.png) no-repeat !important;
+}
+.void{
+	background: url(../images/ext/void.png) no-repeat !important;
+}
+.doexec{
+	background: url(../images/ext/DoExec.png) no-repeat !important;
+}
+.redo{
+	background: url(../images/ext/redo.png) no-repeat !important;
+}
+.recycle{
+	background: url(../images/ext/recycle.png) no-repeat !important;
+}
+
+/*ext 上传按钮图标*/
+.upload-icon {
+            background: url('../images/image_add.png') no-repeat 0 0 !important;
+}

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans  xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xmlns:aop="http://www.springframework.org/schema/aop"
+		xmlns:context="http://www.springframework.org/schema/context"
+		xmlns:tx="http://www.springframework.org/schema/tx"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans 
+							http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+							http://www.springframework.org/schema/tx 
+							http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+							http://www.springframework.org/schema/aop 
+							http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+							http://www.springframework.org/schema/context
+   							http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+						
+	<!-- <context:annotation-config /> -->
+	<!-- 使用 annotation 自动注册bean,并检查@Controller, @Service, @Repository注解已被注入 -->
+	<context:component-scan base-package="*" />  							
+	
+	<!-- 引入jdbc配置文件 -->
+	<context:property-placeholder location="/WEB-INF/classes/jdbc.properties"/>
+	
+	<bean name="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName">
+			<value>${driver}</value>
+		</property>
+		<property name="url">
+			<value>${url}</value>
+		</property>
+		<property name="username">
+			<value>${userName}</value>
+		</property>
+		<property name="password">
+			<value>${passWord}</value>
+		</property>
+		<!-- 最大连接数，0表示无限制 -->
+		<property name="maxActive" value="20"/>
+		<!-- 最多空闲连接数，0表示无限制 -->
+		<property name="maxIdle" value="3"/>
+		<!-- 获取连接最长等待时间，-1表示无限制 -->
+		<property name="maxWait" value="-1"/>
+		<property name="initialSize" value="1"/>
+	</bean>
+	
+	<bean id="pageInterceptor" class="com.zdwl.interceptor.PageInterceptor">
+		<property name="databaseType" value="mysql"/>
+	</bean> 
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<!-- Bo的目录。可以配置多个目录，以逗号分隔 -->
+		<property name="typeAliasesPackage" value="com.zdwl.bo,domain"/>
+		<!-- mybatis 插件 -->
+		<property name="plugins">  
+            <ref bean="pageInterceptor"/>  
+        </property>
+	</bean>
+
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 配置Mapper接口和Mapper Xml文件的目录,接口和Xml文件必须同名。可以配置多个目录，以逗号分隔 -->
+		<property name="basePackage" value="com.zdwl.dao,dao" />
+	</bean>
+	
+	<!-- 事物 -->
+	<bean name="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource"></property>
+	</bean>
+
+	<!-- 对标注@Transaction注解的Bean进行事务管理 -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+	<!-- aop -->
+	<bean id="beanLogExecuteAspect" class="com.zdwl.global.LogExecuteAspect" />
+	<aop:config>
+		<aop:aspect id="aspectLogExecute" ref="beanLogExecuteAspect">  
+            <!--配置com.spring.service包下所有类或接口的所有方法-->  
+            <aop:pointcut id="daoService" expression="execution(* com.zdwl.dao.*.*(..))" />  
+            <aop:before pointcut-ref="daoService" method="doBefore"/>  
+            <aop:after pointcut-ref="daoService" method="doAfter"/>  
+            <aop:around pointcut-ref="daoService" method="doAround"/>  
+        </aop:aspect>
+	</aop:config>
+	
+</beans>
