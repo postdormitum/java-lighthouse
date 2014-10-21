@@ -1,0 +1,30 @@
+.page-signin,
+.page-signup,
+.page-forgot {
+	// 
+    .signin-header {
+        padding: 25px 0;
+        background-color: #dfe0e6;
+    }
+
+    .logo {
+        font-size: 46px;
+        font-weight: bold;
+        a {
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+
+    // 
+    .main-body {
+        border-top: 1px solid lighten($body-bg, 2%);
+        padding: 20px 10px;
+    }
+
+    .form-container {
+        max-width: 420px;
+        margin: 10px auto;
+    }
+}

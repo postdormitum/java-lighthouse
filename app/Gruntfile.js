@@ -43,7 +43,7 @@ module.exports = function(grunt) {
                 },
                 files: [{
                     expand: true,
-                    cwd: 'src', //js目录
+                    cwd: 'admin/scripts', //js目录
                     src: '**/*.js', //所有js文件
                     dest: 'dest/src-min', //输出到此目录下
                     ext: '.min.js' //指定扩展名
@@ -66,14 +66,32 @@ module.exports = function(grunt) {
                 }]
             }
         },
+        compass: {
+            options: {
+                sassDir: 'admin/styles/css',
+                cssDir: 'admin/styles/css'
+            },
+            dist: {
+                options: {
+                    outputStyle: 'compressed',
+                    debugInfo: false,
+                    noLineComments: true
+                }
+            }
+                
+        },
         watch: {
             javascript: {
-                files: ['src/js/**/*.js'],
+                files: ['admin/scripts/**/*.js'],
                 tasks: ['concat:allInOne', 'uglify:buildsrc', 'uglify:buildrelease'],
                 options: {
                     spawn: true,
                     interrupt: true
                 }
+            },
+            compass: {
+                files: ['admin/styles/css/**/*.{scss,sass}'],
+                tasks: ['compass']
             }
         }
     });
@@ -83,9 +101,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-compass');
     grunt.loadNpmTasks('grunt-contrib-connect');
 
     // 每行registerTask定义一个任务
     grunt.registerTask('default', ['concat', 'uglify']);
     grunt.registerTask('check', ['jshint']);
+    grunt.registerTask('dev', ['watch']);
 };

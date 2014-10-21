@@ -3,6 +3,7 @@ var adminApp = angular.module('adminApp', [
 	'ui.router', 'ui.grid'
 
     // Custom modules
+    , 'admin.controllers'
 	//,'GoodListModule', 'GoodDetailModule'
     ]);
 
