@@ -2,7 +2,7 @@
 
 angular.module('app.ui.directives', [])
 
-.directive('uiProcess', [ ->
+.directive('uiProcess', [ '$compile', ($compile) ->
     compilationFunction = (templateElement, templateAttributes, transclude) ->
       if templateElement.length == 1
         node = templateElement[0]
@@ -53,6 +53,7 @@ angular.module('app.ui.directives', [])
                   when 4
                     path.setAttribute('d', 'm' + (7 + count * gap) + ',' + (height / 2 - 3 + (childCount - 2) * 90) + 'h-' + ((gap - 74) / 2 + 4) + 'v-' + (childCount - 2) * 90 + 'h-' + ((gap - 74) / 2 - 4) + 'v-6l-8,10l8,10v-6h' + ((gap - 74) / 2 - 12) + 'v' + (childCount - 2) * 90 + 'h' + ((gap - 74) / 2 + 12) + 'z')
                     rollback = 1
+                  # 前进线返回
                   when 5
                     path.setAttribute('d', 'm' + (7 + count * gap) + ',' + (height / 2 - 3 + (if childCount > 2 and isChild then childCount - 2 else 0) * 90) + 'h-' + (gap - 74) + 'v-6l-8,10l8,10v-6h' + (gap - 74) + 'z')
                     rollback = 1
@@ -88,9 +89,9 @@ angular.module('app.ui.directives', [])
                     circle.setAttribute('stroke', '#515151')
                 # 设置圆形背景色
                 circle.setAttribute('fill', getFillColor(data.type))
-                if data.message != ''
-                  circle.onmousedown = () ->
-                    alert(data.message);
+                #if data.message != ''
+                #  circle.onmousedown = () ->
+                #    alert(data.message);
 
                 return circle
 
@@ -119,8 +120,14 @@ angular.module('app.ui.directives', [])
                         svg.appendChild(line)
                       line = null
 
+                    g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+                    if data.message != ''
+                      g.setAttribute('qtip', data.message)
+
+                    svg.appendChild(g)
+
                     # add circle
-                    svg.appendChild(getCircle(data, index, value.length))
+                    g.appendChild(getCircle(data, index, value.length))
 
                     # add text
                     text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
@@ -128,8 +135,8 @@ angular.module('app.ui.directives', [])
                     text.setAttribute('y', height / 2 + 5 + (if childCount > 2 and isChild then childCount - 2 else 0) * 90)
                     text.setAttribute('style', 'font-family:Verdana;font-size:14;fill:white')
                     text.textContent = data.label
-                    svg.appendChild(text)
-
+                    g.appendChild(text)
+ 
                     # add line
                     if isChild or index + 1 != value.length
                       if childCount > 2 and index + 1 == value.length
@@ -145,6 +152,8 @@ angular.module('app.ui.directives', [])
               # 调整整个画布的高度
               if childCount > 2 and height < (childCount - 1) * 90
                 svg.setAttribute('height', (childCount - 1) * 90)
+
+              $compile(svg)
             )
             
         }
@@ -152,5 +161,53 @@ angular.module('app.ui.directives', [])
     return {
         compile: compilationFunction
         replace: true
+        transclude: true
+        controller: ->
     }
 ])
+
+.directive('qtip', [
+  '$compile', '$templateCache'
+  ($compile, $templateCache) ->
+    clone = $compile($templateCache.get("bubble.html"))
+
+    linkFunction = (scope, ele, attrs) ->
+      qtipParam = 
+        prerender: false
+        position:
+          at: "top center"
+          my: "bottom center"
+        style:
+          tip:
+            corner: "bottom center"
+        content:
+          text: ->
+            scope.$apply ->
+              clone(scope)
+              console.log(scope.text)
+
+      console.log(attrs)
+
+      ele.qtip(qtipParam)
+
+    return {
+      require: "^uiProcess"
+      link: linkFunction
+      scope:
+        text: '=qtip'
+    }
+])
+
+.directive('member', ($compile) ->
+  return {
+      restrict: "E"
+      replace: true
+      scope:
+          member: '='
+      template: "<li></li>"
+      link: (scope, element, attrs) ->
+          if angular.isArray(scope.member.children)
+              element.append("<collection collection='member.children'></collection>")
+              $compile(element.contents())(scope)
+  }
+)
