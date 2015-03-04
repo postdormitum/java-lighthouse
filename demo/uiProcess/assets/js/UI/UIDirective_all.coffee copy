@@ -2,7 +2,7 @@
 
 angular.module('app.ui.directives', [])
 
-.directive('uiProcess', [ ->
+.directive('uiProcess', [ '$compile', ($compile) ->
     compilationFunction = (templateElement, templateAttributes, transclude) ->
       if templateElement.length == 1
         node = templateElement[0]
@@ -122,8 +122,7 @@ angular.module('app.ui.directives', [])
 
                     g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
                     if data.message != ''
-                      g.setAttribute('data-rel', 'tooltip')
-                      g.setAttribute('title', data.message)
+                      g.setAttribute('qtip', data.message)
 
                     svg.appendChild(g)
 
@@ -153,8 +152,8 @@ angular.module('app.ui.directives', [])
               # 调整整个画布的高度
               if childCount > 2 and height < (childCount - 1) * 90
                 svg.setAttribute('height', (childCount - 1) * 90)
-              # 调整整个画布的宽度
-              svg.setAttribute('width', 40 * 2 + (count - 1) * gap)
+
+              $compile(svg)
             )
             
         }
@@ -162,5 +161,52 @@ angular.module('app.ui.directives', [])
     return {
         compile: compilationFunction
         replace: true
+        transclude: true
+        controller: ->
     }
 ])
+
+.directive('qtip', [
+  '$compile', '$templateCache'
+  ($compile, $templateCache) ->
+    clone = $compile($templateCache.get("bubble.html"))
+
+    linkFunction = (scope, ele, attrs) ->
+      qtipParam = 
+        prerender: false
+        position:
+          at: "top center"
+          my: "bottom center"
+        style:
+          tip:
+            corner: "bottom center"
+        content:
+          text: ->
+            scope.$apply ->
+              clone(scope)
+              console.log(scope.text)
+
+      console.log(attrs)
+
+      ele.qtip(qtipParam)
+
+    return {
+      link: linkFunction
+      scope:
+        text: '=qtip'
+    }
+])
+
+.directive('member', ($compile) ->
+  return {
+      restrict: "E"
+      replace: true
+      scope:
+          member: '='
+      template: "<li></li>"
+      link: (scope, element, attrs) ->
+          if angular.isArray(scope.member.children)
+              element.append("<collection collection='member.children'></collection>")
+              $compile(element.contents())(scope)
+  }
+)

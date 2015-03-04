@@ -91,18 +91,13 @@
                     }
                   }
                   circle.setAttribute('fill', getFillColor(data.type));
-                  if (data.message !== '') {
-                    circle.onmousedown = function() {
-                      return alert(data.message);
-                    };
-                  }
                   return circle;
                 };
                 loopProcessData = function(newValue) {
                   var value;
                   value = newValue.nodes ? newValue.nodes : newValue;
                   return angular.forEach(value, function(data, index) {
-                    var text;
+                    var g, text;
                     if (angular.isArray(data)) {
                       isChild = true;
                       childCount++;
@@ -123,13 +118,19 @@
                         }
                         line = null;
                       }
-                      svg.appendChild(getCircle(data, index, value.length));
+                      g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                      if (data.message !== '') {
+                        g.setAttribute('data-rel', 'tooltip');
+                        g.setAttribute('title', data.message);
+                      }
+                      svg.appendChild(g);
+                      g.appendChild(getCircle(data, index, value.length));
                       text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
                       text.setAttribute('x', 26 + count * gap);
                       text.setAttribute('y', height / 2 + 5 + (childCount > 2 && isChild ? childCount - 2 : 0) * 90);
                       text.setAttribute('style', 'font-family:Verdana;font-size:14;fill:white');
                       text.textContent = data.label;
-                      svg.appendChild(text);
+                      g.appendChild(text);
                       if (isChild || index + 1 !== value.length) {
                         if (childCount > 2 && index + 1 === value.length) {
                           svg.appendChild(getArrow(3));
@@ -143,8 +144,9 @@
                 };
                 loopProcessData(newValue);
                 if (childCount > 2 && height < (childCount - 1) * 90) {
-                  return svg.setAttribute('height', (childCount - 1) * 90);
+                  svg.setAttribute('height', (childCount - 1) * 90);
                 }
+                return svg.setAttribute('width', 40 * 2 + (count - 1) * gap);
               });
             }
           };
