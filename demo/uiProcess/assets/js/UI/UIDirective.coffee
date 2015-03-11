@@ -38,7 +38,20 @@ angular.module('app.ui.directives', [])
 
             # 监听数据
             scope.$watch(nodedata, (newValue, oldValue) ->
+              # 重置画布的高度
+              svg.setAttribute('height', height)
+              # 清空画布子元素
+              removeAllLength = svg.childNodes.length
+              while removeAllLength != 0
+                svg.removeChild(svg.lastChild)
+                removeAllLength = svg.childNodes.length
+
+              # 判断数据对象是否定义
+              if newValue == undefined
+                return
+
               #nodes = [] 暂时不使用
+
               count = 0
               isChild = false
               childCount = 0
@@ -153,14 +166,16 @@ angular.module('app.ui.directives', [])
 
                   count++
                 )
-
-              # 调用节点生成函数
-              loopProcessData(newValue)
-              # 调整整个画布的高度
-              if childCount > 2 and height < (childCount - 1) * 90
-                svg.setAttribute('height', (childCount - 1) * 90)
-              # 调整整个画布的宽度
-              svg.setAttribute('width', 40 * 2 + (count - 1) * gap)
+              
+              # 当根节点有数据时，才循环
+              if newValue.nodes
+                # 调用节点生成函数
+                loopProcessData(newValue)
+                # 调整整个画布的高度
+                if childCount > 2 and height < (childCount - 1) * 90
+                  svg.setAttribute('height', (childCount - 1) * 90)
+                # 调整整个画布的宽度
+                svg.setAttribute('width', 40 * 2 + (count - 1) * gap)
             )
             
         }
