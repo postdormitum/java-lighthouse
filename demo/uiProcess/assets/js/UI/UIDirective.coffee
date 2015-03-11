@@ -5,17 +5,22 @@ angular.module('app.ui.directives', [])
 .directive('uiProcess', [ ->
     compilationFunction = (templateElement, templateAttributes, transclude) ->
       if templateElement.length == 1
+        # 获得原始元素
         node = templateElement[0]
         height = node.getAttribute('data-process-height') || '90'
+        # 创建svg画布
         svg = document.createElementNS('http://www.w3.org/2000/svg','svg')
         svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg')
         svg.setAttribute('version', 1.1)
         svg.setAttribute('width', '100%')
         svg.setAttribute('height', height)
         svg.setAttribute('data-process-model', node.getAttribute('data-process-model'));
+        # 原始元素替换为svg画布
         node.parentNode.replaceChild(svg, node);
+
         return {
           pre: preLink = (scope, instanceElement, instanceAttributes, controller) ->
+            # 获得数据
             nodedata = svg.getAttribute('data-process-model')
 
             # return fill color
@@ -31,6 +36,7 @@ angular.module('app.ui.directives', [])
 
               return result
 
+            # 监听数据
             scope.$watch(nodedata, (newValue, oldValue) ->
               #nodes = [] 暂时不使用
               count = 0
