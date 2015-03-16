@@ -1,7 +1,16 @@
+###
+
+  ui的指令
+  创建人：Porry Chen
+  创建日期：2015-02-21
+
+###
+
 'use strict';
 
 angular.module('app.ui.directives', [])
 
+# uiProcess 进度图的展现
 .directive('uiProcess', [ ->
     compilationFunction = (templateElement, templateAttributes, transclude) ->
       if templateElement.length == 1
@@ -57,33 +66,8 @@ angular.module('app.ui.directives', [])
               childCount = 0
               gap = newValue.gap || 200 
               line = null
-
-              # 返回进度线
-              getArrow = (type) ->
-                rollback = 0
-                path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-                switch type
-                  # 开始分支线
-                  when 2
-                    path.setAttribute('d', 'm' + (73 + (count - 1) * gap) + ',' + (height / 2 - 3) + 'h' + ((gap - 74) / 2 + 4) + 'v' + (childCount - 2) * 90 + 'h' + ((gap - 74) / 2 - 4) + 'v-6l8,10l-8,10v-6h-' + ((gap - 74) / 2 + 4) + 'v-' + (childCount - 2) * 90 + 'h-' + ((gap - 74) / 2 - 4) + 'z')
-                  # 结束分支线
-                  when 3 then path.setAttribute('d', 'm' + (73 + count * gap) + ',' + (height / 2 - 3 + (childCount - 2) * 90) + 'h' + ((gap - 74) / 2 - 4) + 'v-' + (childCount - 2) * 90 + 'h' + ((gap - 74) / 2 + 4) + 'v-6l8,10l-8,10v-6h-' + ((gap - 74) / 2 - 4) + 'v' + (childCount - 2) * 90 + 'h-' + ((gap - 74) / 2 + 4) + 'z')
-                  # 开始分支返回
-                  when 4
-                    path.setAttribute('d', 'm' + (7 + count * gap) + ',' + (height / 2 - 3 + (childCount - 2) * 90) + 'h-' + ((gap - 74) / 2 + 4) + 'v-' + (childCount - 2) * 90 + 'h-' + ((gap - 74) / 2 - 4) + 'v-6l-8,10l8,10v-6h' + ((gap - 74) / 2 - 12) + 'v' + (childCount - 2) * 90 + 'h' + ((gap - 74) / 2 + 12) + 'z')
-                    rollback = 1
-                  # 前进线返回
-                  when 5
-                    path.setAttribute('d', 'm' + (7 + count * gap) + ',' + (height / 2 - 3 + (if childCount > 2 and isChild then childCount - 2 else 0) * 90) + 'h-' + (gap - 74) + 'v-6l-8,10l8,10v-6h' + (gap - 74) + 'z')
-                    rollback = 1
-                  # 正常前进线
-                  else
-                    path.setAttribute('d', 'm' + (73 + count * gap) + ',' + (height / 2 - 3 + (if childCount > 2 and isChild then childCount - 2 else 0) * 90) + 'h' + (gap - 60 - 6 - 8) + 'v-6l8,10l-8,10v-6h-' + (gap - 60 - 6 - 8) + 'z')
-                path.setAttribute('stroke-opacity', 'null')
-                path.setAttribute('stroke-width', 0)
-                path.setAttribute('fill', getFillColor(type, rollback))
-
-                return path
+              # 进度线数组
+              lines = []
 
               # 返回节点圆形
               getCircle = (data, index, length) ->
@@ -114,6 +98,83 @@ angular.module('app.ui.directives', [])
 
                 return circle
 
+              # 返回带箭头进度线
+              getArrow = (type, index, childIndex) ->
+                rollback = 0
+                path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+                switch type
+                  # 开始分支线
+                  when 2
+                    path.setAttribute('d', 'm' + (73 + (index - 1) * gap) + ',' + (height / 2 - 3) + 'h' + ((gap - 74) / 2 + 4) + 'v' + childIndex * 90 + 'h' + ((gap - 74) / 2 - 4) + 'v-6l8,10l-8,10v-6h-' + ((gap - 74) / 2 + 4) + 'v-' + childIndex * 90 + 'h-' + ((gap - 74) / 2 - 4) + 'z')
+                  # 结束分支线
+                  when 3 then path.setAttribute('d', 'm' + (73 + index * gap) + ',' + (height / 2 - 3 + childIndex * 90) + 'h' + ((gap - 74) / 2 - 4) + 'v-' + childIndex * 90 + 'h' + ((gap - 74) / 2 + 4) + 'v-6l8,10l-8,10v-6h-' + ((gap - 74) / 2 - 4) + 'v' + childIndex * 90 + 'h-' + ((gap - 74) / 2 + 4) + 'z')
+                  # 开始分支返回
+                  when 4
+                    path.setAttribute('d', 'm' + (7 + index * gap) + ',' + (height / 2 - 3 + childIndex * 90) + 'h-' + ((gap - 74) / 2 + 4) + 'v-' + childIndex * 90 + 'h-' + ((gap - 74) / 2 - 4) + 'v-6l-8,10l8,10v-6h' + ((gap - 74) / 2 - 12) + 'v' + childIndex * 90 + 'h' + ((gap - 74) / 2 + 12) + 'z')
+                    rollback = 1
+                  # 前进线返回
+                  when 5
+                    path.setAttribute('d', 'm' + (7 + index * gap) + ',' + (height / 2 - 3 + childIndex * 90) + 'h-' + (gap - 74) + 'v-6l-8,10l8,10v-6h' + (gap - 74) + 'z')
+                    rollback = 1
+                  # 正常前进线
+                  else
+                    path.setAttribute('d', 'm' + (73 + index * gap) + ',' + (height / 2 - 3 + childIndex * 90) + 'h' + (gap - 60 - 6 - 8) + 'v-6l8,10l-8,10v-6h-' + (gap - 60 - 6 - 8) + 'z')
+                path.setAttribute('stroke-opacity', 'null')
+                path.setAttribute('stroke-width', 0)
+                path.setAttribute('fill', getFillColor(type, rollback))
+
+                return path
+
+              # 返回进度线，调用getArrow方法
+              getLine = (type) ->
+                childIndex = 0
+                switch type
+                  # 开始分支线
+                  when 2, 3, 4
+                    childIndex = childCount - 2
+                  else
+                    childIndex = if childCount > 2 and isChild then childCount - 2 else 0
+
+                return getArrow(type, count, childIndex)
+
+              addLine = (type, index) ->
+                info = {}
+                info.type = type
+                info.count = count
+                info.childCount = childCount
+                info.index = index
+                info.isChild = isChild
+
+                lines.push(info)
+
+                return info;
+
+              changeLine = (rollback, index) ->
+                if rollback < -1
+                  
+                  angular.forEach(lines, (info, loopIndex) ->
+                    
+                    console.log('rollback' + rollback + ' == ' + index + '//count:' + info.count)
+
+                    if info.count > 0
+                      console.log(index + rollback + 'info.count:' + info.count + ', count:' + count)
+                      if index + rollback < 0
+                        if info.count - count == rollback
+                          info.type = 5
+                          rollback++
+                      else if childCount == info.childCount
+                        ipos = info.index - index
+                        if ipos < -1 and ipos >= rollback
+                          if info.type == 2
+                            #lines[loopIndex].type = 4
+                            info.type = 4
+                          else
+                            info.type = 5
+                            info.count += 1
+                    else
+                      rollback++
+                  )
+
               # 进度循环主函数
               loopProcessData = (newValue) ->
                 value = if newValue.nodes then newValue.nodes else newValue
@@ -131,12 +192,16 @@ angular.module('app.ui.directives', [])
 
                     if childCount > 2 and index == 0
                       count -= value.length
-                      svg.appendChild(getArrow(if data.rollback > 0 then 4 else 2))
-                    if line
-                      if data.rollback > 0 and !(childCount == 3 and index == 0)
-                        svg.appendChild(getArrow(5))
+                      changeLine(data.rollback, index)
+                      if data.rollback < 0
+                        #svg.appendChild(getLine(4))
                       else
-                        svg.appendChild(line)
+                        addLine(2, index)
+                    if line
+                      if data.rollback < 0 and !(childCount > 2 and index == 0)
+                        lines.pop()
+                        changeLine(data.rollback, index)
+                        #svg.appendChild(getLine(5))
                       line = null
 
                     g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
@@ -160,11 +225,24 @@ angular.module('app.ui.directives', [])
                     # add line
                     if isChild or index + 1 != value.length
                       if childCount > 2 and index + 1 == value.length
-                        svg.appendChild(getArrow(3))
+                        #svg.appendChild(getLine(3))
                       else
-                        line = getArrow(1)
+                        line = addLine(1, index)
 
                   count++
+                )
+
+                console.log(lines)
+                angular.forEach(lines, (info, index) ->
+                  childIndex = 0
+                  switch info.type
+                    # 开始分支线
+                    when 2, 3, 4
+                      childIndex = info.childCount - 2
+                    else
+                      childIndex = if info.childCount > 2 and info.isChild then info.childCount - 2 else 0
+
+                  svg.appendChild(getArrow(info.type, info.count, childIndex))
                 )
               
               # 当根节点有数据时，才循环
