@@ -154,25 +154,26 @@ angular.module('app.ui.directives', [])
                   
                   angular.forEach(lines, (info, loopIndex) ->
                     
-                    console.log('rollback' + rollback + ' == ' + index + '//count:' + info.count)
+                    console.log('rollback:' + rollback + ', index:' + index + ', info.index:' + info.index + ', isChild :' + isChild + ', info.count:' + info.count + ', count:' + count)
+                    
+                    if (isChild and (index + rollback < -1)) or (!isChild and (count + rollback < -1))
+                      if count + rollback <= 0 then rollback = - count + 1
 
-                    if info.count > 0
-                      console.log(index + rollback + 'info.count:' + info.count + ', count:' + count)
-                      if index + rollback < 0
-                        if info.count - count == rollback
+                      if rollback < -1 and info.count - count == rollback
+                        if info.count > 0
                           info.type = 5
-                          rollback++
-                      else if childCount == info.childCount
+                          info.count += 1
+                        rollback++
+                    else if isChild and (index + rollback >= -1)
+                      console.log(index + rollback + 'rollback' + rollback + ', info.childCount:' + info.childCount + ', childCount:' + childCount + ', info.type:' + info.type)
+                      if childCount == info.childCount
                         ipos = info.index - index
-                        if ipos < -1 and ipos >= rollback
+                        if ipos <= -1 and ipos > rollback
                           if info.type == 2
-                            #lines[loopIndex].type = 4
                             info.type = 4
                           else
                             info.type = 5
-                            info.count += 1
-                    else
-                      rollback++
+                            #info.count += 1
                   )
 
               # 进度循环主函数
@@ -194,14 +195,16 @@ angular.module('app.ui.directives', [])
                       count -= value.length
                       changeLine(data.rollback, index)
                       if data.rollback < 0
-                        #svg.appendChild(getLine(4))
+                        svg.appendChild(getLine(4))
                       else
                         addLine(2, index)
+
                     if line
                       if data.rollback < 0 and !(childCount > 2 and index == 0)
-                        lines.pop()
+                        if !isChild and (count + data.rollback <= 0) then data.rollback = - count + 1
+                        if data.rollback == -1 then lines.pop()
                         changeLine(data.rollback, index)
-                        #svg.appendChild(getLine(5))
+                        svg.appendChild(getLine(5))
                       line = null
 
                     g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
@@ -225,14 +228,13 @@ angular.module('app.ui.directives', [])
                     # add line
                     if isChild or index + 1 != value.length
                       if childCount > 2 and index + 1 == value.length
-                        #svg.appendChild(getLine(3))
+                        svg.appendChild(getLine(3))
                       else
                         line = addLine(1, index)
 
                   count++
                 )
 
-                console.log(lines)
                 angular.forEach(lines, (info, index) ->
                   childIndex = 0
                   switch info.type
