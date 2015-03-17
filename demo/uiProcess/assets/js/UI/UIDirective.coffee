@@ -137,6 +137,7 @@ angular.module('app.ui.directives', [])
 
                 return getArrow(type, count, childIndex)
 
+              # lines数组中加入进度线数据信息
               addLine = (type, index) ->
                 info = {}
                 info.type = type
@@ -149,36 +150,43 @@ angular.module('app.ui.directives', [])
 
                 return info;
 
+              # 改变lines数据中进度线的方向与颜色
               changeLine = (rollback, index) ->
                 if rollback < -1
-                  
+                  # 顺序从前到后循环进度条数组
                   angular.forEach(lines, (info, loopIndex) ->
-                    
-                    console.log('rollback:' + rollback + ', index:' + index + ', info.index:' + info.index + ', isChild :' + isChild + ', info.count:' + info.count + ', count:' + count)
-                    
+                    # 判断是否有分支                    
                     if (isChild and (index + rollback < -1)) or (!isChild and (count + rollback < -1))
+                      # 重新设置回退数
                       if count + rollback <= 0 then rollback = - count + 1
-
+                      # 判断进度信息是否满足变更条件
                       if rollback < -1 and info.count - count == rollback
                         if info.count > 0
                           info.type = 5
                           info.count += 1
                         rollback++
                     else if isChild and (index + rollback >= -1)
-                      console.log(index + rollback + 'rollback' + rollback + ', info.childCount:' + info.childCount + ', childCount:' + childCount + ', info.type:' + info.type)
                       if childCount == info.childCount
+                        # 分支节点里进度信息的判断
                         ipos = info.index - index
-                        if ipos <= -1 and ipos > rollback
+                        if ipos <= -1 and (ipos > rollback or (info.index ==0 and ipos == rollback and info.type != 2))
                           if info.type == 2
                             info.type = 4
                           else
                             info.type = 5
-                            #info.count += 1
+                            info.count += 1
+                      else
+                        # 第一条分支节点的特殊判断
+                        if childCount == 2 and info.count - count == rollback
+                          info.type = 5
+                          info.count += 1
                   )
 
               # 进度循环主函数
               loopProcessData = (newValue) ->
                 value = if newValue.nodes then newValue.nodes else newValue
+
+                # 循环画布数据
                 angular.forEach(value, (data, index) ->
                   if angular.isArray(data)
                     isChild = true
@@ -191,6 +199,7 @@ angular.module('app.ui.directives', [])
                   else
                     data.rollback = data.rollback || 0
 
+                    # 分支折线
                     if childCount > 2 and index == 0
                       count -= value.length
                       changeLine(data.rollback, index)
@@ -199,14 +208,20 @@ angular.module('app.ui.directives', [])
                       else
                         addLine(2, index)
 
+                    # 是否加入顺序线
                     if line
                       if data.rollback < 0 and !(childCount > 2 and index == 0)
+                        # 判断回退步数是否正确，可纠正
                         if !isChild and (count + data.rollback <= 0) then data.rollback = - count + 1
+                        # 从进度线数组中移除数据
                         if data.rollback == -1 then lines.pop()
+                        # 改变进度线的方向与颜色
                         changeLine(data.rollback, index)
-                        svg.appendChild(getLine(5))
+                        # 加入回退的顺序线
+                        if (!isChild and count > 1) or isChild then svg.appendChild(getLine(5))
                       line = null
 
+                    # 把圆形与文字放入组中
                     g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
                     if data.message != ''
                       g.setAttribute('data-rel', 'tooltip')
@@ -234,7 +249,13 @@ angular.module('app.ui.directives', [])
 
                   count++
                 )
+              
+              # 当根节点有数据时，才循环
+              if newValue.nodes
+                # 调用节点生成函数
+                loopProcessData(newValue)
 
+                # 循环数据生成进度线
                 angular.forEach(lines, (info, index) ->
                   childIndex = 0
                   switch info.type
@@ -244,13 +265,10 @@ angular.module('app.ui.directives', [])
                     else
                       childIndex = if info.childCount > 2 and info.isChild then info.childCount - 2 else 0
 
+                  # 画布中加入进度条
                   svg.appendChild(getArrow(info.type, info.count, childIndex))
                 )
-              
-              # 当根节点有数据时，才循环
-              if newValue.nodes
-                # 调用节点生成函数
-                loopProcessData(newValue)
+
                 # 调整整个画布的高度
                 if childCount > 2 and height < (childCount - 1) * 90
                   svg.setAttribute('height', (childCount - 1) * 90)
